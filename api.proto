@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "./;grpc-ch12";
+option go_package = "./;grpc";
 
 service Random {
     rpc GetDate (RandomParams) returns (DateTime);
