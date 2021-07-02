@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	_ "github.com/mactsouk/grpc"
-	"github.com/mactsouk/protobuf"
+	_ "github.com/mactsouk/protoapi"
 	"google.golang.org/grpc"
 )
 

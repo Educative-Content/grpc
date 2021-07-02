@@ -5,7 +5,7 @@ import (
 	"net"
 	"os"
 
-	p "github.com/mactsouk/grpc"
+	api "github.com/mactsouk/protoapi"
 	"google.golang.org/grpc"
 )
 
@@ -24,7 +24,7 @@ func main() {
 
 	server := grpc.NewServer()
 	var messageServer MessageServer
-	p.RegisterMessageServiceServer(server, messageServer)
+	api.RegisterRandomServer(server, messageServer)
 
 	listen, err := net.Listen("tcp", port)
 	if err != nil {
