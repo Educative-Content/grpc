@@ -1,15 +1,83 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"math/rand"
 	"net"
 	"os"
+	"time"
 
-	api "github.com/mactsouk/protoapi"
+	"github.com/mactsouk/protoapi"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
-type MessageServer struct {
+var min = 0
+var max = 100
+
+func random(min, max int) int {
+	return rand.Intn(max-min) + min
+}
+
+func getString(len int64) string {
+	temp := ""
+	startChar := "!"
+	var i int64 = 1
+	for {
+		// For getting valid ASCII characters
+		myRand := random(0, 94)
+		newChar := string(startChar[0] + byte(myRand))
+		temp = temp + newChar
+		if i == len {
+			break
+		}
+		i++
+	}
+	return temp
+}
+
+type RandomServer struct {
+}
+
+func (RandomServer) GetDate(ctx context.Context, r *protoapi.RequestDateTime) (*protoapi.DateTime, error) {
+	currentTime := time.Now()
+	response := &protoapi.DateTime{
+		Value: currentTime.String(),
+	}
+
+	return response, nil
+}
+
+func (RandomServer) GetRandom(ctx context.Context, r *protoapi.RandomParams) (*protoapi.RandomInt, error) {
+	rand.Seed(r.Seed)
+	place := r.Place
+	temp := random(min, max)
+	for {
+		place = place - 1
+		if place < 0 {
+			break
+		}
+		temp = random(min, max)
+	}
+
+	response := &protoapi.RandomInt{
+		Value: int64(temp),
+	}
+
+	return response, nil
+}
+
+func (RandomServer) GetRandomPass(ctx context.Context, r *protoapi.RequestPass) (*protoapi.RandomPass, error) {
+	SEED := time.Now().Unix()
+	rand.Seed(SEED)
+	temp := getString(r.Length)
+
+	response := &protoapi.RandomPass{
+		Password: temp,
+	}
+
+	return response, nil
 }
 
 var port = ":8080"
@@ -17,14 +85,15 @@ var port = ":8080"
 func main() {
 	if len(os.Args) == 1 {
 		fmt.Println("Using default port:", port)
-		return
 	} else {
 		port = os.Args[1]
 	}
 
 	server := grpc.NewServer()
-	var messageServer MessageServer
-	api.RegisterRandomServer(server, messageServer)
+	var randomServer RandomServer
+	protoapi.RegisterRandomServer(server, randomServer)
+
+	reflection.Register(server)
 
 	listen, err := net.Listen("tcp", port)
 	if err != nil {
