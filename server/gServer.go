@@ -38,6 +38,7 @@ func getString(len int64) string {
 }
 
 type RandomServer struct {
+	protoapi.UnimplementedRandomServer
 }
 
 func (RandomServer) GetDate(ctx context.Context, r *protoapi.RequestDateTime) (*protoapi.DateTime, error) {
@@ -50,12 +51,12 @@ func (RandomServer) GetDate(ctx context.Context, r *protoapi.RequestDateTime) (*
 }
 
 func (RandomServer) GetRandom(ctx context.Context, r *protoapi.RandomParams) (*protoapi.RandomInt, error) {
-	rand.Seed(r.Seed)
-	place := r.Place
+	rand.Seed(r.GetSeed())
+	place := r.GetPlace()
 	temp := random(min, max)
 	for {
 		place = place - 1
-		if place < 0 {
+		if place <= 0 {
 			break
 		}
 		temp = random(min, max)
@@ -69,9 +70,8 @@ func (RandomServer) GetRandom(ctx context.Context, r *protoapi.RandomParams) (*p
 }
 
 func (RandomServer) GetRandomPass(ctx context.Context, r *protoapi.RequestPass) (*protoapi.RandomPass, error) {
-	SEED := time.Now().Unix()
-	rand.Seed(SEED)
-	temp := getString(r.Length)
+	rand.Seed(r.GetSeed())
+	temp := getString(r.GetLength())
 
 	response := &protoapi.RandomPass{
 		Password: temp,
@@ -100,6 +100,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+
 	fmt.Println("Serving requests...")
 	server.Serve(listen)
 }
