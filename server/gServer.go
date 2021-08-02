@@ -20,6 +20,19 @@ func random(min, max int) int {
 	return rand.Intn(max-min) + min
 }
 
+// Extra function for creating secure random numbers
+//
+// func randomSecure(min, max int) int {
+// 	v, err := rand.Int(rand.Reader, big.NewInt(int64(max)))
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return min
+// 	}
+// 	fmt.Println("**", v, min, max)
+
+// 	return min + int(v.Uint64())
+// }
+
 func getString(len int64) string {
 	temp := ""
 	startChar := "!"
@@ -55,7 +68,7 @@ func (RandomServer) GetRandom(ctx context.Context, r *protoapi.RandomParams) (*p
 	place := r.GetPlace()
 	temp := random(min, max)
 	for {
-		place = place - 1
+		place--
 		if place <= 0 {
 			break
 		}

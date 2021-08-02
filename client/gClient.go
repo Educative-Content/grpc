@@ -32,12 +32,7 @@ func AskPass(ctx context.Context, m protoapi.RandomClient, seed int64, length in
 		Length: length,
 	}
 
-	r, err := m.GetRandomPass(ctx, request)
-	if err != nil {
-		return nil, err
-	}
-
-	return r, nil
+	return m.GetRandomPass(ctx, request)
 }
 
 func AskRandom(ctx context.Context, m protoapi.RandomClient, seed int64, place int64) (*protoapi.RandomInt, error) {
