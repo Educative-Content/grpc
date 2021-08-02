@@ -18,12 +18,7 @@ func AskingDateTime(ctx context.Context, m protoapi.RandomClient) (*protoapi.Dat
 		Value: "Please send me the date and time",
 	}
 
-	r, err := m.GetDate(ctx, request)
-	if err != nil {
-		return nil, err
-	}
-
-	return r, nil
+	return m.GetDate(ctx, request)
 }
 
 func AskPass(ctx context.Context, m protoapi.RandomClient, seed int64, length int64) (*protoapi.RandomPass, error) {
@@ -41,12 +36,7 @@ func AskRandom(ctx context.Context, m protoapi.RandomClient, seed int64, place i
 		Place: place,
 	}
 
-	r, err := m.GetRandom(ctx, request)
-	if err != nil {
-		return nil, err
-	}
-
-	return r, nil
+	return m.GetRandom(ctx, request)
 }
 
 func main() {
